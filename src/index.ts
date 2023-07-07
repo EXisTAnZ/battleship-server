@@ -1,1 +1,1 @@
-console.log('Mamaaaa uuuu uuuu!')
+console.log('Mamaaaa u uuu!');
