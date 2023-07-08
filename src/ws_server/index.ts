@@ -1,4 +1,5 @@
 import { WebSocketServer } from 'ws';
+import { msgParser } from './utils';
 
 export default class WSServer {
   private server: WebSocketServer;
@@ -13,7 +14,7 @@ export default class WSServer {
       ws.on('error', console.error);
 
       ws.on('message', function message(data) {
-        console.log('received: %s', data);
+        console.log(msgParser(data.toString()));
       });
 
       ws.send(
