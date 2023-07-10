@@ -7,14 +7,14 @@ import {
   msgType,
 } from '../types/message';
 
-export const msgParser = function (message: string) {
+export function msgParser(message: string) {
   const msgParse = JSON.parse(message) as Message;
   const { type, id } = msgParse;
   const data = dataParser(type, msgParse.data);
   return { type, data, id };
-};
+}
 
-export const dataParser = function (type: msgType, data: string) {
+export function dataParser(type: msgType, data: string) {
   let parsedData = {};
   switch (type) {
     case msgType.REGISTRATION:
@@ -36,4 +36,8 @@ export const dataParser = function (type: msgType, data: string) {
       break;
   }
   return parsedData;
-};
+}
+
+export function prepResponse(type: msgType, data: object) {
+  return JSON.stringify({ type, data: JSON.stringify(data), id: 0 });
+}

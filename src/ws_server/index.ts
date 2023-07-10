@@ -1,29 +1,25 @@
 import { WebSocketServer } from 'ws';
-import { msgParser } from './utils';
+import AppController from './app/controller';
+import { randomUUID } from 'crypto';
+import WSConnection from './app/connection';
 
 export default class WSServer {
   private server: WebSocketServer;
+  private controller: AppController;
 
   constructor(port: string | number) {
     if (typeof port === 'string') port = parseInt(port);
     this.server = new WebSocketServer({ port });
+    this.controller = new AppController(this.server);
   }
 
   start() {
     this.server.on('connection', (ws) => {
-      ws.on('error', console.error);
-
-      ws.on('message', function message(data) {
-        console.log(msgParser(data.toString()));
-      });
-
-      ws.send(
-        JSON.stringify({
-          type: 'create_room',
-          data: '',
-          id: 0,
-        }),
-      );
+      const connection_id = randomUUID();
+      const connection = new WSConnection(ws, connection_id);
+      this.controller.addConnection(connection);
+      console.log('WebSocket client connected!', connection_id);
+      this.controller.addListeners();
     });
   }
 }
