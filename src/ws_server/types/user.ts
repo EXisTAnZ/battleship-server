@@ -1,5 +1,7 @@
 export default interface User {
-  id?: string;
+  id?: number;
   name: string;
   password: string;
+  error?: boolean;
+  errorMessage?: string;
 }

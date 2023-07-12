@@ -10,7 +10,7 @@ export default class WSServer {
   constructor(port: string | number) {
     if (typeof port === 'string') port = parseInt(port);
     this.server = new WebSocketServer({ port });
-    this.controller = new AppController(this.server);
+    this.controller = new AppController();
   }
 
   start() {
