@@ -10,10 +10,10 @@ export default class WSConnection {
     this.id = id;
   }
 
-  public set player_id(id: number) {
+  public set playerId(id: number) {
     this._playerId = id;
   }
-  public get player_id() {
+  public get playerId() {
     return this._playerId;
   }
 }
