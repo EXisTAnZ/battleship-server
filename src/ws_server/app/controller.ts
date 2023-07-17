@@ -1,6 +1,6 @@
 import WSConnection from './connection';
 import { msgParser, prepResponse } from '../utils';
-import { msgType } from '../types/message';
+import { msgConnect, msgType } from '../types/message';
 import DBEngine from '../db/dbengine';
 import User from '../types/user';
 
@@ -28,12 +28,22 @@ export default class AppController {
     if (message.type === msgType.CREATE_ROOM) {
       await this.dbEngine.addRoom(connection.player_id);
     }
+    if (message.type === msgType.CONNECT_TO_ROOM) {
+      await this.dbEngine.addUserToRoom(
+        connection.player_id,
+        (message.data as msgConnect).indexRoom,
+      );
+    }
     await this.sendInfoAll();
   }
 
   public addListeners() {
     this.connections.forEach((connection) => {
-      connection.socket.on('message', (msg) => this.exec(msg.toString(), connection));
+      connection.socket.on('message', (msg) =>
+        this.exec(msg.toString(), connection).catch((err) =>
+          console.log('\x1b[31mError:\x1b[0m', err.message),
+        ),
+      );
       connection.socket.on('close', (msg) => console.log(`Exit whith code: ${msg}!`));
       connection.socket.on('error', (err) => console.error(err));
     });

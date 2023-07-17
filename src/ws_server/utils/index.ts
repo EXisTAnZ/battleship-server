@@ -1,11 +1,4 @@
-import {
-  Message,
-  msgAddShips,
-  msgAttack,
-  msgConnect,
-  msgPlayer,
-  msgType,
-} from '../types/message';
+import { Message, msgAddShips, msgAttack, msgConnect, msgPlayer, msgType } from '../types/message';
 
 export function msgParser(message: string) {
   const msgParse = JSON.parse(message) as Message;

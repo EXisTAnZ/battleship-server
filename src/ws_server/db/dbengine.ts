@@ -91,7 +91,10 @@ export default class DBEngine {
     return newRoom;
   }
 
-  public async addUserToRoom(user: User, room: Room) {
+  public async addUserToRoom(userId: number, roomId: number) {
+    const user = await this.getUser(userId);
+    const room = await this.getRoom(roomId);
+    if (!room) throw new Error(ERROR_MSG.NOT_FIND_ROOM);
     if (room.roomUsers.length > 1) throw new Error(ERROR_MSG.FULL_ROOM);
     if (room.roomUsers.includes(user)) throw new Error(ERROR_MSG.ALREADY_IN_ROOM);
     room.roomUsers.push(user);
