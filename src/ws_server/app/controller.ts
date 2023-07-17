@@ -32,6 +32,7 @@ export default class AppController {
     }
     if (message.type === msgType.CREATE_ROOM) {
       await this.dbEngine.addRoom(connection.playerId);
+      await this.sendInfoAll();
     }
     if (message.type === msgType.CONNECT_TO_ROOM) {
       const playerId = connection.playerId;
@@ -39,8 +40,8 @@ export default class AppController {
 
       await this.dbEngine.addUserToRoom(playerId, roomId);
       await this.createGame(roomId);
+      await this.sendInfoAll();
     }
-    await this.sendInfoAll();
   }
 
   public addListeners() {
