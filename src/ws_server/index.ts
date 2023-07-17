@@ -21,5 +21,6 @@ export default class WSServer {
       console.log('WebSocket client connected!', connection_id);
       this.controller.addListeners();
     });
+    this.server.on('close', () => console.log(`Disconnected!`));
   }
 }

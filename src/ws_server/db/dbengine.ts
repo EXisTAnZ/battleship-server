@@ -1,34 +1,34 @@
-import userDB from './db';
+import { userDB, roomDB } from './db';
 import User from '../types/user';
 import { ERROR_MSG } from '../types/constants';
 import { pbkdf2Sync } from 'crypto';
+import Room from '../types/room';
 
 export default class DBEngine {
-  private db: User[];
-
-  constructor() {
-    this.db = userDB;
+  public async getUsers(): Promise<User[]> {
+    return userDB;
   }
 
-  public async getUsers(): Promise<User[]> {
-    return this.db;
+  public async getUser(userId: number) {
+    const initUser: User = { name: 'RS Bot' };
+    return userDB.find((item) => item.index === userId) || initUser;
   }
 
   public async addUser(user: User) {
     try {
       this.userValidator(user);
       const existedUser = this.existedUser(user.name);
-      if (existedUser) return this.auth(existedUser, user.password);
+      if (existedUser) return this.auth(existedUser, user.password || '');
       else {
         const newId = this.getMaxID() + 1;
         const newUser: User = {
-          id: newId,
+          index: newId,
           name: user.name,
-          password: this.hashPass(user.password),
+          password: this.hashPass(user.password || ''),
           error: false,
           errorMessage: '',
         };
-        this.db.push(newUser);
+        userDB.push(newUser);
         return newUser;
       }
     } catch (err) {
@@ -41,7 +41,7 @@ export default class DBEngine {
   }
 
   private existedUser(login: string) {
-    return this.db.find((user) => user.name === login);
+    return userDB.find((user) => user.name === login);
   }
 
   private auth(user: User, password: string) {
@@ -62,6 +62,38 @@ export default class DBEngine {
   }
 
   private getMaxID() {
-    return Math.max(...this.db.map((item) => item.id || 0), 0);
+    return Math.max(...userDB.map((item) => item.index || 0), 0);
+  }
+
+  public async getRoom(roomId: number) {
+    return roomDB.find((item) => item.roomId === roomId);
+  }
+  public async isUserInRoom(userId: number) {
+    return roomDB
+      .map((item) => item.roomUsers)
+      .flat()
+      .includes(await this.getUser(userId));
+  }
+
+  public async getReadyRooms() {
+    return [...roomDB].filter((item) => item.roomUsers.length === 1);
+  }
+
+  public async addRoom(userId: number) {
+    if (await this.isUserInRoom(userId)) throw new Error(ERROR_MSG.ALREADY_IN_ROOM);
+    const nextRoomId = Math.max(...roomDB.map((item) => item.roomId || 0), 0) + 1;
+    const user = await this.getUser(userId);
+    const newRoom: Room = {
+      roomId: nextRoomId,
+      roomUsers: [user],
+    };
+    roomDB.push(newRoom);
+    return newRoom;
+  }
+
+  public async addUserToRoom(user: User, room: Room) {
+    if (room.roomUsers.length > 1) throw new Error(ERROR_MSG.FULL_ROOM);
+    if (room.roomUsers.includes(user)) throw new Error(ERROR_MSG.ALREADY_IN_ROOM);
+    room.roomUsers.push(user);
   }
 }

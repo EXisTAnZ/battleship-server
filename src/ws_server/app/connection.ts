@@ -2,7 +2,7 @@ import WebSocket from 'ws';
 
 export default class WSConnection {
   public socket: WebSocket;
-  private _player_id = 0;
+  private _playerId = 0;
   private id: string;
 
   constructor(socket: WebSocket, id: string) {
@@ -11,9 +11,9 @@ export default class WSConnection {
   }
 
   public set player_id(id: number) {
-    this._player_id = id;
+    this._playerId = id;
   }
   public get player_id() {
-    return this._player_id;
+    return this._playerId;
   }
 }

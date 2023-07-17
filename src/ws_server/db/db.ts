@@ -1,3 +1,4 @@
+import Room from '../types/room';
 import User from '../types/user';
-const userDB: User[] = [];
-export default userDB;
+export const userDB: User[] = [];
+export const roomDB: Room[] = [];
